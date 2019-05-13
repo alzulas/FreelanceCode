@@ -35,8 +35,20 @@ PGUSER="postgres"
 PGPASSWORD="SomePassword"
 
 #Port open to listen
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((TCP_IP, TCP_PORT))
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except OSError as msg:
+    s = None
+    continue
+try:
+    s.bind((TCP_IP, TCP_PORT))
+except OSError as msg:
+    s.close()
+    s = None
+    continue
+if s is None:
+    print('Could not open socket')
+    sys.exit(1)
 
 # Set up a connection to the postgres server.
 conn_string = "host="+ PGHOST +" port="+ "5432" +" dbname="+ PGDATABASE +" user=" + PGUSER +" password="+ PGPASSWORD
